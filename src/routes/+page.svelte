@@ -15,9 +15,9 @@
 		pause: false,
 		spawner: {
 			bounds: {
-				x: 10,
-				y: 10,
-				z: 10
+				x: 20,
+				y: 20,
+				z: 20
 			},
 			density: 1000
 		},
