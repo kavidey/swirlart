@@ -15,17 +15,17 @@
 		pause: false,
 		spawner: {
 			bounds: {
-				x: 5,
-				y: 5,
-				z: 5
+				x: 10,
+				y: 10,
+				z: 10
 			},
 			density: 1000
 		},
 		rendering: {
 			pointSize: 0.5,
-			integrationStep: 0.001,
+			integrationStep: 0.005,
 			decayRate: 0.99,
-			resetChance: 0.01
+			resetChance: 0.005
 		}
 	};
 
