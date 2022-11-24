@@ -11,13 +11,9 @@
 		Fog,
 		FogExp2
 	} from 'three';
+	import type { config } from '$lib/config';
 
 	// import math from 'mathjs';
-
-	const scale = 200;
-	const num_points = 300;
-	const num_iterations = 30;
-	const derivative_scale = 0.5;
 
 	let lead_points: number[] = [];
 	let lead_colors: number[] = [];
@@ -25,28 +21,69 @@
 	let trail_points: number[] = [];
 	let trail_colors: number[] = [];
 
+	export let config: config;
+	export const reset = () => {
+		setup();
+	};
+
 	function addLeadingPoints() {
-		for (let i = 0; i < num_points; i++) {
-			let x = Math.random() * scale - scale / 2;
-			let y = Math.random() * scale - scale / 2;
-			let z = Math.random() * scale - scale / 2;
+		for (let i = 0; i < config.spawner.density - lead_points.length; i++) {
+			let x = Math.random() * config.spawner.bounds.x - config.spawner.bounds.x / 2;
+			let y = Math.random() * config.spawner.bounds.y - config.spawner.bounds.y / 2;
+			let z = Math.random() * config.spawner.bounds.z - config.spawner.bounds.z / 2;
 			lead_points.push(x, y, z);
 
-			lead_colors.push(Math.random(), Math.random(), Math.random());
+			lead_colors.push(25 / 255, 178 / 255, 209 / 255);
 		}
 	}
 
 	function removeLeadingPoints() {
-		lead_points.splice(0, num_points * 3);
-		lead_colors.splice(0, num_points * 3);
+		// lead_points.splice(0, config.spawner.density * 3);
+		// lead_colors.splice(0, config.spawner.density * 3);
+		let new_points: number[] = [];
+		let new_colors: number[] = [];
+
+		for (let i = 0; i < lead_points.length; i += 3) {
+			if (Math.random() > 0.09) {
+				new_points.push(lead_points[i], lead_points[i + 1], lead_points[i + 2]);
+				new_colors.push(lead_colors[i], lead_colors[i + 1], lead_colors[i + 2]);
+			}
+		}
+		lead_points = new_points;
+		lead_colors = new_colors;
 	}
 
 	function removeTrailPoints() {
-		const to_remove = lead_points.length - num_points * 3;
-		// trail_points.splice(trail_points.length - to_remove, to_remove);
-		// trail_colors.splice(trail_points.length - to_remove, to_remove);
-		trail_points.splice(0, to_remove);
-		trail_colors.splice(0, to_remove);
+		// const to_remove = config.spawner.density * 3;
+		// const to_remove = lead_points.length;
+		// console.log(to_remove / 3);
+		// trail_points.splice(0, to_remove);
+		// trail_colors.splice(0, to_remove);
+
+		trail_colors = trail_colors.map((c) => c * 0.95);
+
+		let new_trail_points: number[] = [];
+		let new_trail_colors: number[] = [];
+
+		for (let i = 0; i < trail_points.length; i += 3) {
+			const x = trail_points[i];
+			const y = trail_points[i + 1];
+			const z = trail_points[i + 2];
+
+			const r = trail_colors[i];
+			const g = trail_colors[i + 1];
+			const b = trail_colors[i + 2];
+
+			const threshold = 0.05;
+
+			if (r > threshold || g > threshold || b > threshold) {
+				new_trail_points.push(x, y, z);
+				new_trail_colors.push(r, g, b);
+			}
+		}
+
+		trail_points = new_trail_points;
+		trail_colors = new_trail_colors;
 	}
 
 	function step() {
@@ -57,51 +94,90 @@
 			let y = lead_points[i * 3 + 1];
 			let z = lead_points[i * 3 + 2];
 
-			let r = Math.sqrt(x * x + y * y + z * z);
-			let theta = Math.atan2(y, x);
-			let phi = Math.acos(z / r);
+			// let r = Math.sqrt(x * x + y * y + z * z);
+			// let theta = Math.atan2(y, x);
+			// let phi = Math.acos(z / r);
 
-			let r_dot = 1;
-			let theta_dot = 1 / r;
-			let phi_dot = 1 / (r * Math.sin(phi));
+			// let r_dot = 1;
+			// let theta_dot = 1 / r;
+			// let phi_dot = 1 / (r * Math.sin(phi));
 
-			let dx =
-				r_dot * Math.cos(theta) * Math.sin(phi) +
-				r * theta_dot * Math.sin(theta) * Math.sin(phi) -
-				r * phi_dot * Math.cos(theta) * Math.cos(phi);
-			let dy =
-				r_dot * Math.sin(theta) * Math.sin(phi) -
-				r * theta_dot * Math.cos(theta) * Math.sin(phi) -
-				r * phi_dot * Math.sin(theta) * Math.cos(phi);
-			let dz = r_dot * Math.cos(phi) + r * phi_dot * Math.sin(phi);
+			// let dx =
+			// 	r_dot * Math.cos(theta) * Math.sin(phi) +
+			// 	r * theta_dot * Math.sin(theta) * Math.sin(phi) -
+			// 	r * phi_dot * Math.cos(theta) * Math.cos(phi);
+			// let dy =
+			// 	r_dot * Math.sin(theta) * Math.sin(phi) -
+			// 	r * theta_dot * Math.cos(theta) * Math.sin(phi) -
+			// 	r * phi_dot * Math.sin(theta) * Math.cos(phi);
+			// let dz = r_dot * Math.cos(phi) + r * phi_dot * Math.sin(phi);
 
-			new_points.push(x, y, z);
-			new_colors.push(lead_colors[i * 3 + 0], lead_colors[i * 3 + 1], lead_colors[i * 3 + 2]);
+			let dx = 0.1;
+			let dy = 0.1;
+			let dz = 0.1;
 
-			lead_points[i * 3 + 0] += dx * derivative_scale;
-			lead_points[i * 3 + 1] += dy * derivative_scale;
-			lead_points[i * 3 + 2] += dz * derivative_scale;
+			// const p = 28;
+			// const o = 10;
+			// const b = 8 / 3;
+
+			// let dx = o * (y - x);
+			// let dy = x * (p - z) - y;
+			// let dz = x * y - b * z;
+
+			trail_points.push(x, y, z);
+			trail_colors.push(lead_colors[i * 3 + 0], lead_colors[i * 3 + 1], lead_colors[i * 3 + 2]);
+
+			lead_points[i * 3 + 0] += dx * config.rendering.integrationStep;
+			lead_points[i * 3 + 1] += dy * config.rendering.integrationStep;
+			lead_points[i * 3 + 2] += dz * config.rendering.integrationStep;
 		}
-
-		trail_points = [...trail_points, ...new_points];
-		trail_colors = [...trail_colors, ...new_colors];
 	}
 
 	function advectPoints() {
-		removeLeadingPoints();
 		addLeadingPoints();
-		removeTrailPoints();
+
 		step();
+
+		removeTrailPoints();
+		removeLeadingPoints();
+
+		lead_points = [...lead_points];
+		lead_colors = [...lead_colors];
+
+		trail_points = [...trail_points];
+		trail_colors = [...trail_colors];
 	}
 
-	for (let i = 0; i < num_iterations; i++) {
-		addLeadingPoints();
-		step();
+	function setup() {
+		lead_points = [];
+		lead_colors = [];
+		trail_points = [];
+		trail_colors = [];
+
+		for (let i = 0; i < config.rendering.trailLength; i++) {
+			addLeadingPoints();
+
+			step();
+		}
+
+		lead_points = [...lead_points];
+		lead_colors = [...lead_colors];
+
+		trail_points = [...trail_points];
+		trail_colors = [...trail_colors];
 	}
+
+	onMount(() => {
+		setup();
+	});
 
 	let advectInterval: any;
 	onMount(() => {
-		advectInterval = setInterval(advectPoints, 20);
+		advectInterval = setInterval(() => {
+			if (!config.pause) {
+				advectPoints();
+			}
+		}, 20);
 	});
 	onDestroy(() => {
 		clearInterval(advectInterval);
@@ -109,12 +185,17 @@
 
 	const { scene } = useThrelte();
 	scene.background = new Color('#000000');
-	scene.fog = new Fog('#000000', scale*2.5, scale*4);
 	// scene.fog = new FogExp2('#000000', 0.001);
 </script>
 
-<Three type={PerspectiveCamera} makeDefault  position={[scale*2, scale*2, scale*2]} fov={24}>
-	<OrbitControls target={{ y: 0 }} enableZoom={false} />
+<Three
+	type={PerspectiveCamera}
+	makeDefault
+	position={[2 * config.spawner.bounds.x, 2 * config.spawner.bounds.y, 2 * config.spawner.bounds.z]}
+	fov={24}
+	far={10000}
+>
+	<OrbitControls target={{ y: 0 }} enableZoom={true} />
 </Three>
 
 <Three type={Points}>
@@ -125,7 +206,7 @@
 			color: new Float32BufferAttribute(lead_colors, 3)
 		}}
 	/>
-	<Three type={PointsMaterial} vertexColors={true} size={3} fog={true} />
+	<Three type={PointsMaterial} vertexColors={true} size={config.rendering.pointSize} fog={true} />
 </Three>
 <Three type={Points}>
 	<Three
@@ -135,5 +216,5 @@
 			color: new Float32BufferAttribute(trail_colors, 3)
 		}}
 	/>
-	<Three type={PointsMaterial} vertexColors={true} size={3} fog={true} />
+	<Three type={PointsMaterial} vertexColors={true} size={config.rendering.pointSize} fog={true} />
 </Three>

@@ -1,10 +1,32 @@
-<script>
+<script lang="ts">
 	import { Canvas } from '@threlte/core';
 	import Scene from '../lib/scene.svelte';
 	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
+	import { Pane } from 'tweakpane';
+	import type { config } from '$lib/config';
 
 	let width = 500;
 	let height = 500;
+
+	let reset: () => void;
+
+	let config: config = {
+		pause: false,
+		spawner: {
+			bounds: {
+				x: 5,
+				y: 5,
+				z: 5
+			},
+			density: 10
+		},
+		rendering: {
+			pointSize: 1,
+			trailLength: 50,
+			integrationStep: 1
+		}
+	};
 
 	const resize = () => {
 		width = window.innerWidth;
@@ -13,6 +35,25 @@
 	onMount(() => {
 		window.addEventListener('resize', resize);
 		resize();
+
+		const pane = new Pane({ title: 'Scene' });
+		pane.addButton({ title: 'Reset' }).on('click', () => {
+			reset();
+		});
+		pane.addInput(config, 'pause');
+
+		const spawnerControls = pane.addFolder({ title: 'Spawner' });
+		spawnerControls.addInput(config.spawner, 'bounds', {
+			x: { min: 0, max: 1000 },
+			y: { min: 0, max: 1000 },
+			z: { min: 0, max: 1000 }
+		});
+		spawnerControls.addInput(config.spawner, 'density', { min: 0, max: 100_000 });
+
+		const renderingControls = pane.addFolder({ title: 'Rendering' });
+		renderingControls.addInput(config.rendering, 'pointSize', { min: 0, max: 10 });
+		renderingControls.addInput(config.rendering, 'trailLength', { min: 0, max: 100_000 });
+		renderingControls.addInput(config.rendering, 'integrationStep', { min: 0, max: 1 });
 	});
 
 	onDestroy(() => {
@@ -21,5 +62,5 @@
 </script>
 
 <Canvas size={{ width, height }}>
-	<Scene />
+	<Scene bind:config bind:reset />
 </Canvas>

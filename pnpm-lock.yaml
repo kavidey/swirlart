@@ -6,6 +6,7 @@ specifiers:
   '@sveltejs/kit': next
   '@threlte/core': ^5.0.2
   '@threlte/preprocess': ^0.0.2
+  '@tweakpane/core': ^1.1.0
   '@types/three': ^0.146.0
   '@typescript-eslint/eslint-plugin': ^5.27.0
   '@typescript-eslint/parser': ^5.27.0
@@ -21,6 +22,7 @@ specifiers:
   svelte-sequential-preprocessor: ^0.0.7
   three: ^0.146.0
   tslib: ^2.3.1
+  tweakpane: ^3.1.0
   typescript: ^4.7.4
   vite: ^3.1.0
 
@@ -33,6 +35,7 @@ devDependencies:
   '@sveltejs/kit': 1.0.0-next.560_svelte@3.53.1+vite@3.2.4
   '@threlte/core': 5.0.2
   '@threlte/preprocess': 0.0.2
+  '@tweakpane/core': 1.1.0
   '@types/three': 0.146.0
   '@typescript-eslint/eslint-plugin': 5.44.0_fnsv2sbzcckq65bwfk7a5xwslu
   '@typescript-eslint/parser': 5.44.0_hsf322ms6xhhd4b5ne6lb74y4a
@@ -47,6 +50,7 @@ devDependencies:
   svelte-sequential-preprocessor: 0.0.7
   three: 0.146.0
   tslib: 2.4.1
+  tweakpane: 3.1.0
   typescript: 4.9.3
   vite: 3.2.4
 
@@ -222,6 +226,10 @@ packages:
 
   /@threlte/preprocess/0.0.2:
     resolution: {integrity: sha512-Eb3u3nAEBSFpadQvCdeZKy0xE4kgnlmxeTxnzTsmvUJt5ZEadbMg1+/LXn0oAYgFO72YQ62CJ7WI4hmoQSpOeA==}
+    dev: true
+
+  /@tweakpane/core/1.1.0:
+    resolution: {integrity: sha512-vbbiQb+aoFI13lIbE7DJvhHZVE1YlUpGoaAamSpU6wLp2jA3VowS1wfRJBBB8IBCYm7nF6ULl7zfJKxl1XdyfA==}
     dev: true
 
   /@types/cookie/0.5.1:
@@ -1771,6 +1779,10 @@ packages:
     dependencies:
       tslib: 1.14.1
       typescript: 4.9.3
+    dev: true
+
+  /tweakpane/3.1.0:
+    resolution: {integrity: sha512-PGAp/LPQdHwzL7/iAW4lV1p9iPQTti7YMjMWO48CoYjvZRS59RmgQnhEGzKzqST1JnmOYmQUjTe8bdhlZRJs5A==}
     dev: true
 
   /type-check/0.4.0:
