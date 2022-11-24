@@ -44,7 +44,7 @@
 		let new_colors: number[] = [];
 
 		for (let i = 0; i < lead_points.length; i += 3) {
-			if (Math.random() > 0.09) {
+			if (Math.random() > config.rendering.resetChance) {
 				new_points.push(lead_points[i], lead_points[i + 1], lead_points[i + 2]);
 				new_colors.push(lead_colors[i], lead_colors[i + 1], lead_colors[i + 2]);
 			}
@@ -60,7 +60,7 @@
 		// trail_points.splice(0, to_remove);
 		// trail_colors.splice(0, to_remove);
 
-		trail_colors = trail_colors.map((c) => c * 0.95);
+		trail_colors = trail_colors.map((c) => c * config.rendering.decayRate);
 
 		let new_trail_points: number[] = [];
 		let new_trail_colors: number[] = [];
@@ -112,17 +112,17 @@
 			// 	r * phi_dot * Math.sin(theta) * Math.cos(phi);
 			// let dz = r_dot * Math.cos(phi) + r * phi_dot * Math.sin(phi);
 
-			let dx = 0.1;
-			let dy = 0.1;
-			let dz = 0.1;
+			// let dx = 0.1;
+			// let dy = 0.1;
+			// let dz = 0.1;
 
-			// const p = 28;
-			// const o = 10;
-			// const b = 8 / 3;
+			const p = 28;
+			const o = 10;
+			const b = 8 / 3;
 
-			// let dx = o * (y - x);
-			// let dy = x * (p - z) - y;
-			// let dz = x * y - b * z;
+			let dx = o * (y - x);
+			let dy = x * (p - z) - y;
+			let dz = x * y - b * z;
 
 			trail_points.push(x, y, z);
 			trail_colors.push(lead_colors[i * 3 + 0], lead_colors[i * 3 + 1], lead_colors[i * 3 + 2]);
@@ -154,7 +154,7 @@
 		trail_points = [];
 		trail_colors = [];
 
-		for (let i = 0; i < config.rendering.trailLength; i++) {
+		for (let i = 0; i < 10; i++) {
 			addLeadingPoints();
 
 			step();
@@ -177,7 +177,7 @@
 			if (!config.pause) {
 				advectPoints();
 			}
-		}, 20);
+		}, 10);
 	});
 	onDestroy(() => {
 		clearInterval(advectInterval);
@@ -198,7 +198,7 @@
 	<OrbitControls target={{ y: 0 }} enableZoom={true} />
 </Three>
 
-<Three type={Points}>
+<!-- <Three type={Points}>
 	<Three
 		type={BufferGeometry}
 		attributes={{
@@ -207,7 +207,7 @@
 		}}
 	/>
 	<Three type={PointsMaterial} vertexColors={true} size={config.rendering.pointSize} fog={true} />
-</Three>
+</Three> -->
 <Three type={Points}>
 	<Three
 		type={BufferGeometry}

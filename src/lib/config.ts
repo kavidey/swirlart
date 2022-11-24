@@ -1,4 +1,5 @@
 export type config = {
+    pause: boolean,
     spawner: {
         bounds: {
             x: number,
@@ -9,8 +10,8 @@ export type config = {
     },
     rendering: {
         pointSize: number,
-        trailLength: number,
         integrationStep: number,
-        pause: boolean,
+        decayRate: number,
+        resetChance: number,
     },
 }

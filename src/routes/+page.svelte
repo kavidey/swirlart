@@ -19,12 +19,13 @@
 				y: 5,
 				z: 5
 			},
-			density: 10
+			density: 1000
 		},
 		rendering: {
-			pointSize: 1,
-			trailLength: 50,
-			integrationStep: 1
+			pointSize: 0.5,
+			integrationStep: 0.001,
+			decayRate: 0.99,
+			resetChance: 0.01
 		}
 	};
 
@@ -52,8 +53,9 @@
 
 		const renderingControls = pane.addFolder({ title: 'Rendering' });
 		renderingControls.addInput(config.rendering, 'pointSize', { min: 0, max: 10 });
-		renderingControls.addInput(config.rendering, 'trailLength', { min: 0, max: 100_000 });
 		renderingControls.addInput(config.rendering, 'integrationStep', { min: 0, max: 1 });
+		renderingControls.addInput(config.rendering, 'decayRate', { min: 0.9, max: 1 });
+		renderingControls.addInput(config.rendering, 'resetChance', { min: 0, max: 0.1 });
 	});
 
 	onDestroy(() => {
