@@ -13,7 +13,7 @@
 	} from 'three';
 	import type { config } from '$lib/config';
 
-	// import math from 'mathjs';
+	import { parse } from 'mathjs';
 
 	let lead_points: number[] = [];
 	let lead_colors: number[] = [];
@@ -23,8 +23,17 @@
 
 	export let config: config;
 	export const reset = () => {
+		dx = parse(config.field.dx).compile();
+		dy = parse(config.field.dy).compile();
+		dz = parse(config.field.dz).compile();
+		additionalVars = JSON.parse(config.field.additionalVars);
 		setup();
 	};
+
+	let dx = parse(config.field.dx).compile();
+	let dy = parse(config.field.dy).compile();
+	let dz = parse(config.field.dz).compile();
+	let additionalVars = JSON.parse(config.field.additionalVars);
 
 	function addLeadingPoints() {
 		for (let i = 0; i < config.spawner.density - lead_points.length; i++) {
@@ -38,8 +47,6 @@
 	}
 
 	function removeLeadingPoints() {
-		// lead_points.splice(0, config.spawner.density * 3);
-		// lead_colors.splice(0, config.spawner.density * 3);
 		let new_points: number[] = [];
 		let new_colors: number[] = [];
 
@@ -54,12 +61,6 @@
 	}
 
 	function removeTrailPoints() {
-		// const to_remove = config.spawner.density * 3;
-		// const to_remove = lead_points.length;
-		// console.log(to_remove / 3);
-		// trail_points.splice(0, to_remove);
-		// trail_colors.splice(0, to_remove);
-
 		trail_colors = trail_colors.map((c) => c * config.rendering.decayRate);
 
 		let new_trail_points: number[] = [];
@@ -116,20 +117,23 @@
 			// let dy = 0.1;
 			// let dz = 0.1;
 
-			const p = 28;
-			const o = 10;
-			const b = 8 / 3;
+			const scope = {
+				x,
+				y,
+				z,
+				...additionalVars,
+			};
 
-			let dx = o * (y - x);
-			let dy = x * (p - z) - y;
-			let dz = x * y - b * z;
+			let pdx = dx.evaluate(scope);
+			let pdy = dy.evaluate(scope);
+			let pdz = dz.evaluate(scope);
 
 			trail_points.push(x, y, z);
 			trail_colors.push(lead_colors[i * 3 + 0], lead_colors[i * 3 + 1], lead_colors[i * 3 + 2]);
 
-			lead_points[i * 3 + 0] += dx * config.rendering.integrationStep;
-			lead_points[i * 3 + 1] += dy * config.rendering.integrationStep;
-			lead_points[i * 3 + 2] += dz * config.rendering.integrationStep;
+			lead_points[i * 3 + 0] += pdx * config.rendering.integrationStep;
+			lead_points[i * 3 + 1] += pdy * config.rendering.integrationStep;
+			lead_points[i * 3 + 2] += pdz * config.rendering.integrationStep;
 		}
 	}
 

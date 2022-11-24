@@ -1,5 +1,11 @@
 export type config = {
     pause: boolean,
+    field: {
+        dx: string,
+        dy: string,
+        dz: string,
+        additionalVars: string,
+    },
     spawner: {
         bounds: {
             x: number,
